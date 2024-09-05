@@ -4,6 +4,8 @@ This code will allow an instructor to bulk update the submission status of an as
 
 ## Option 1: Python – `app.py`
 
+This method will gather all the assignments that are marked as late and submitted prior to a specified cutoff date. It seems to run slower than Option 2 but since it automatically gathers all the assignments from the Canvas API it's my preferred method.
+
 1. Create a virtual environment named `canvas` using `venv`.
 
 ```bash
