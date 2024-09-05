@@ -116,8 +116,6 @@ def process_late_submissions(course_id):
 
 
 if __name__ == "__main__":
-    CREA_202_FALL_2024 = 104132
-    CREA_330_FALL_2024 = 101987
-    CREA_391_FALL_2024 = 105901
+    COURSE_ID = os.getenv("CREA_202_FALL_2024")
 
-    process_late_submissions(CREA_202_FALL_2024)
+    process_late_submissions(COURSE_ID)
