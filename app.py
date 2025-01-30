@@ -37,6 +37,7 @@ def get_submissions(course_id, assignment_id):
     }
 
     submissions = get_all_pages(url, headers, params)
+
     return submissions
 
 
@@ -57,7 +58,7 @@ def update_late_policy_status(course_id, assignment_id, user_id, hours_late):
             f"Updated late_policy_status for submission {user_id} in assignment {assignment_id}"
         )
 
-    # except requests.exceptions.HTTPError as e:
+    except requests.exceptions.HTTPError as e:
         if response.status_code == 404:
             print(
                 f"Submission {user_id} or assignment {assignment_id} not found (404 error)."
@@ -80,7 +81,7 @@ def process_late_submissions(course_id):
 
     # Date to compare submissions against
     cutoff_date = datetime(
-        2024, 8, 31, 23, 59, 59
+        2025, 1, 31, 23, 59, 59  # 2025-01-31 23:59:59
     )  # All assignments submitted late but prior to this cutoff will have the late penalty removed
 
     for assignment in assignments:
@@ -105,7 +106,7 @@ def process_late_submissions(course_id):
                     submission["submitted_at"], "%Y-%m-%dT%H:%M:%SZ"
                 )
                 if (
-                    late or submission_date > due_date
+                    late  # or submission_date > due_date
                 ) and submission_date <= cutoff_date:
                     user_id = submission["user_id"]
 
