@@ -118,39 +118,6 @@ def process_late_submissions(course_id):
                     )
 
 
-def update_discussion_sorting(course_id):
-    """
-    Update discussion sorting to sort by rating
-    Discontinued by Canvas LMS team in late 2022.
-    """
-    print("👉 update_discussion_sorting()")
-    url = f"{API_URL}/courses/{course_id}/discussion_topics"
-    headers = {"Authorization": f"Bearer {ACCESS_TOKEN}"}
-
-    # Get all discussions in the course
-    discussions = get_all_pages(url, headers)
-
-    for discussion in discussions:
-        discussion_id = discussion["id"]
-
-        if discussion["sort_by_rating"]:
-            print(f"id: {discussion_id} already {discussion['sort_by_rating']}")
-            continue
-
-        update_url = f"{url}/{discussion_id}"
-        data = {"sort_by_rating": True}
-
-        try:
-            response = requests.put(update_url, headers=headers, json=data)
-            response.raise_for_status()
-            print(f"Updated discussion {discussion_id} to sort by rating")
-            response_data = response.json()
-        except requests.exceptions.HTTPError as e:
-            print(f"Failed to update discussion {discussion_id}: {e}")
-
-        print(response_data["sort_by_rating"])
-
-
 if __name__ == "__main__":
     COURSE_ID = os.getenv("CREA_202_FALL_2025")
 
