@@ -12,17 +12,23 @@ This method will gather all the assignments that are marked as late and submitte
 python3 -m venv canvas
 ```
 
-2. Install the requirements.
+2. Enable the virtual environment named `canvas` if it has already been created.
+
+```bash
+source canvas/bin/activate
+```
+
+3. Install the requirements.
 
 ```bash
 pip install -r requirements.txt
 ```
 
-3. Rename `.env.sample` to `.env`.
+4. Rename `.env.sample` to `.env`.
 
-4. Update the values for `.env`.
+5. Update the values for `.env`.
 
-5. Run `app.py`.
+6. Run `app.py`.
 
 ```bash
 python3 app.py
