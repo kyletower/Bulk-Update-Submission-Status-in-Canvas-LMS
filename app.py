@@ -9,7 +9,10 @@ load_dotenv()
 # Canvas API configuration
 API_URL = os.getenv("API_URL")
 ACCESS_TOKEN = os.getenv("CANVAS_ACCESS_TOKEN")
-
+# Date to compare submissions against
+CUTOFF_DATE = datetime(
+    2025, 9, 1, 23, 59, 59
+)  # All assignments submitted late but prior to this cutoff will have the late penalty removed
 
 # Function to get all pages of a resource
 def get_all_pages(url, headers, params=None):
@@ -32,7 +35,7 @@ def get_submissions(course_id, assignment_id):
     url = f"{API_URL}/courses/{course_id}/assignments/{assignment_id}/submissions"
     headers = {"Authorization": f"Bearer {ACCESS_TOKEN}"}
     params = {
-        "submitted_since": "2024-08-31T23:59:59Z",
+        "submitted_since": "2024-08-31T23:59:59Z", # 🔴 Refactor
         "include[]": "submission_history",
     }
 
@@ -78,11 +81,6 @@ def process_late_submissions(course_id):
     # Get all assignments with pagination
     assignments = get_all_pages(assignments_url, headers)
 
-    # Date to compare submissions against
-    cutoff_date = datetime(
-        2025, 9, 1, 23, 59, 59
-    )  # All assignments submitted late but prior to this cutoff will have the late penalty removed
-
     for assignment in assignments:
         assignment_id = assignment["id"]
         due_at = assignment.get("due_at")
@@ -91,8 +89,9 @@ def process_late_submissions(course_id):
             # Convert due_at to a datetime object if needed
             due_date = datetime.strptime(due_at, "%Y-%m-%dT%H:%M:%SZ")
 
-        if due_date > cutoff_date:
+        if due_date > CUTOFF_DATE:
             continue # assignment due after cutoff, skip
+
         submissions = get_submissions(course_id, assignment_id)
 
         for submission in submissions:
@@ -108,7 +107,7 @@ def process_late_submissions(course_id):
                 )
                 if (
                     late or submission_date > due_date
-                ) and submission_date <= cutoff_date:
+                ) and submission_date <= CUTOFF_DATE:
                     user_id = submission["user_id"]
 
                     # Update the late_policy_status to 'none'
