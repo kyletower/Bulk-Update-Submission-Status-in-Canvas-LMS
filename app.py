@@ -80,7 +80,7 @@ def process_late_submissions(course_id):
 
     # Date to compare submissions against
     cutoff_date = datetime(
-        2024, 8, 31, 23, 59, 59
+        2025, 9, 1, 23, 59, 59
     )  # All assignments submitted late but prior to this cutoff will have the late penalty removed
 
     for assignment in assignments:
@@ -91,6 +91,8 @@ def process_late_submissions(course_id):
             # Convert due_at to a datetime object if needed
             due_date = datetime.strptime(due_at, "%Y-%m-%dT%H:%M:%SZ")
 
+        if due_date > cutoff_date:
+            continue # assignment due after cutoff, skip
         submissions = get_submissions(course_id, assignment_id)
 
         for submission in submissions:
@@ -149,7 +151,7 @@ def update_discussion_sorting(course_id):
 
 
 if __name__ == "__main__":
-    COURSE_ID = os.getenv("CREA_202_SPRING_2025")
+    COURSE_ID = os.getenv("CREA_391_FALL_2025")
 
-    # process_late_submissions(COURSE_ID)
-    update_discussion_sorting(COURSE_ID)
+    # update_discussion_sorting(COURSE_ID)
+    process_late_submissions(COURSE_ID)
