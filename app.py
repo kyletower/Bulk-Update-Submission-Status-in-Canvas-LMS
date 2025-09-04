@@ -30,13 +30,14 @@ def get_all_pages(url, headers, params=None):
 
 
 # Function to get submissions for a course
-def get_submissions(course_id, assignment_id):
+def get_submissions(course_id, assignment_id, due_iso):
     print("👉 get_submissions()")
     url = f"{API_URL}/courses/{course_id}/assignments/{assignment_id}/submissions"
     headers = {"Authorization": f"Bearer {ACCESS_TOKEN}"}
     params = {
-        "submitted_since": "2024-08-31T23:59:59Z", # 🔴 Refactor
+        "submitted_since": due_iso, # Ignore assignments submitted on time
         "include[]": "submission_history",
+        "per_page": 100, # Maximum size to reduce HTTP calls
     }
 
     submissions = get_all_pages(url, headers, params)
@@ -92,7 +93,10 @@ def process_late_submissions(course_id):
         if due_date > CUTOFF_DATE:
             continue # assignment due after cutoff, skip
 
-        submissions = get_submissions(course_id, assignment_id)
+        # Build ISO timestamp from the assignment’s due date
+        due_iso = due_date.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+        submissions = get_submissions(course_id, assignment_id, due_iso)
 
         for submission in submissions:
             submitted_at = submission.get("submitted_at")
@@ -105,9 +109,7 @@ def process_late_submissions(course_id):
                 submission_date = datetime.strptime(
                     submission["submitted_at"], "%Y-%m-%dT%H:%M:%SZ"
                 )
-                if (
-                    late or submission_date > due_date
-                ) and submission_date <= CUTOFF_DATE:
+                if late and submission_date <= CUTOFF_DATE:
                     user_id = submission["user_id"]
 
                     # Update the late_policy_status to 'none'
@@ -150,7 +152,7 @@ def update_discussion_sorting(course_id):
 
 
 if __name__ == "__main__":
-    COURSE_ID = os.getenv("CREA_391_FALL_2025")
+    COURSE_ID = os.getenv("CREA_202_FALL_2025")
 
     # update_discussion_sorting(COURSE_ID)
     process_late_submissions(COURSE_ID)
